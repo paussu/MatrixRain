@@ -14,10 +14,11 @@ class MatrixView @JvmOverloads constructor(
 
     private val characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*".map { it.toString() }
 
-    private val fontSize = 40
+    private val fontSize = 30  // Smaller font = more columns
+    private val columnDensityFactor = 0.8f  // < 1.0 = more columns, > 1.0 = fewer
     private var columns = 0
     private lateinit var drops: IntArray
-    private val streamLength = 10  // Number of characters per column
+    private val streamLength = 14  // Longer streams for visual richness
 
     private val paint = Paint().apply {
         color = Color.GREEN
@@ -28,7 +29,7 @@ class MatrixView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        columns = w / fontSize
+        columns = (w / (fontSize * columnDensityFactor)).toInt()
         drops = IntArray(columns) { Random.nextInt(h / fontSize) }
     }
 
@@ -46,7 +47,7 @@ class MatrixView @JvmOverloads constructor(
                 paint.alpha = alpha
 
                 val char = characters.random()
-                canvas.drawText(char, (i * fontSize).toFloat(), yPos.toFloat(), paint)
+                canvas.drawText(char, (i * fontSize * columnDensityFactor).toFloat(), yPos.toFloat(), paint)
             }
 
             if (drops[i] * fontSize > height && Random.nextInt(100) > 95) {
